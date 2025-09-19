@@ -1,5 +1,6 @@
 # find python by path
 set(Python_FIND_REGISTRY LAST)
+
 # Options
 option(CHECK_OPTIONAL_LIBS "Try to download / enable all optional libraries (use only EPL clean libraries, if set to false)" ON)
 option(MULTITHREADED_BUILD "Use all available cores for building (applies to Visual Studio only)")
@@ -27,7 +28,10 @@ set(PROJECT_NAME "SUMO" CACHE STRING "Project/Solution name")
 # you may use -DCMAKE_BUILD_TYPE:STRING=Debug from the command line
 set(default_build_type "Release")
 
+# 设置一个变量来保存原始的构建类型
 set(CMAKE_ORIGINAL_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+
+# 如果没有指定构建类型，并且没有多配置生成器（如Visual Studio或Xcode），那么设置默认的构建类型
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
@@ -44,11 +48,12 @@ set(PACKAGE_VERSION "git")
 # Check if libraries have to be found, depending on SUMO_LIBRARIES
 set(SUMO_LIBRARIES "$ENV{SUMO_LIBRARIES}" CACHE PATH "Location of SUMOLibraries dependencies")
 
-# some user place SUMOLibraries in the same SUMO folder
+# if SUMO_LIBRARIES is not set, check in ../SUMOLibraries
 if (NOT SUMO_LIBRARIES AND EXISTS "${CMAKE_SOURCE_DIR}/../SUMOLibraries")
     set(SUMO_LIBRARIES "${CMAKE_SOURCE_DIR}/../SUMOLibraries")
 endif ()
 
+# Enable ccache support if installed
 if (CCACHE_SUPPORT)
     if (MSVC)
         file(GLOB SCCACHE_ROOT "${SUMO_LIBRARIES}/sccache-*")
@@ -100,6 +105,7 @@ if (${CMAKE_VERSION} VERSION_LESS 3.8.0)
 else()
     set(CMAKE_CXX_STANDARD 17)
 endif()
+
 if (NOT "cxx_std_17" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
     message(WARNING "Your compiler does not support C++17. Please consider upgrading your compiler toolchain.")
 endif()

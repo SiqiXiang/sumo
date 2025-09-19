@@ -232,7 +232,7 @@ MSCFModel::finalizeSpeed(MSVehicle* const veh, double vPos) const {
 #endif
     // apply further speed adaptations
     vNext = applyStartupDelay(veh, vMin, vNext);
-
+  
     assert(vNext >= vMinEmergency); // stronger braking is permitted in lane-changing related emergencies
     assert(vNext <= vMax);
 
@@ -259,6 +259,8 @@ double
 MSCFModel::applyStartupDelay(const MSVehicle* veh, const double vMin, const double vMax, const SUMOTime addTime) const {
     UNUSED_PARAMETER(vMin);
     // timeSinceStartup was already incremented by DELTA_T
+
+    //如果车辆启动时间大于0并且车辆启动时间-DELTA_T小于myStartupDelay+addTime，即车辆还在启动延迟时间内
     if (veh->getTimeSinceStartup() > 0 && veh->getTimeSinceStartup() - DELTA_T < myStartupDelay + addTime) {
         assert(veh->getSpeed() <= SUMO_const_haltingSpeed);
         const SUMOTime remainingDelay = myStartupDelay + addTime - (veh->getTimeSinceStartup() - DELTA_T);
